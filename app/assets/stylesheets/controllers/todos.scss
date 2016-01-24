@@ -1,0 +1,59 @@
+#todos-index {
+  width: 700px;
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  border: solid 1px #ccc;
+
+  input {
+    border: none;
+    box-shadow: none;
+  }
+
+  .row {
+    margin: 0;
+  }
+
+  .todo-form {
+    padding: 10px;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .completed {
+    text-decoration: line-through;
+    color: #ccc;
+  }
+
+  .editing {
+    border: solid 1px black;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  }
+
+  .todo-item {
+    padding: 10px;
+    border-top: solid 1px #ccc;
+
+    .ctn-todo-description {
+      width: 100%;
+      background-color: #fff;
+    }
+  }
+
+  .todo-controls {
+    padding: 10px;
+    border-top: solid 1px #ccc;
+
+    .todos-display-controls {
+      text-align: center;
+    }
+
+    .btn-clear-completed {
+      text-align: right;
+    }
+  }
+
+}
