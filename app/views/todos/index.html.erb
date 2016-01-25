@@ -1,30 +1,18 @@
 <div class="todo-form">
   <%= bootstrap_form_for :todo do |f| %>
-    <%= f.text_field :description, hide_label: true, placeholder: 'What needs to be done', class: 'input-todo-description' %>
+    <%= f.text_field :description, hide_label: true, placeholder: "What needs to be done", class: "input-todo-description" %>
   <% end %>
 </div>
 
-<div class="todo-items todo-all">
+<div class="todo-items">
   <% @todos.each do |todo| %>
-    <%= render partial: 'todos/partials/todo', locals: {id: todo.id, status: todo.status, description: todo.description} %>
-  <% end %>
-</div>
-
-<div class="todo-items todo-active hidden">
-  <% @active_todos.each do |todo| %>
-    <%= render partial: 'todos/partials/todo', locals: {id: todo.id, status: todo.status, description: todo.description} %>
-  <% end %>
-</div>
-
-<div class="todo-items todo-completed hidden">
-  <% @completed_todos.each do |todo| %>
-    <%= render partial: 'todos/partials/todo', locals: {id: todo.id, status: todo.status, description: todo.description} %>
+    <%= render partial: "todos/partials/todo", locals: {id: todo.id, status: todo.status, description: todo.description} %>
   <% end %>
 </div>
 
 <div class="todo-controls row">
   <div class="col-xs-3">
-    <span id="todos-remaining"><%= @active_todos.count %></span> items left
+    <span id="todo-count"><%= @active_todos.count %></span> items left
   </div>
   <div class="col-xs-6 row todos-display-controls">
     <div class="btn btn-default btn-display-all">All</div>
@@ -34,4 +22,4 @@
   <div class="col-xs-3 btn btn-clear-completed">Clear completed</div>
 </div>
 
-<%= render partial: 'todos/partials/todo_template' %>
+<%= render partial: "todos/partials/todo_template" %>

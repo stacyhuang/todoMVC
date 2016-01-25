@@ -2,12 +2,11 @@ class TodosController < ApplicationController
   def index
     @todos = Todo.all.order(created_at: :asc)
     @active_todos = Todo.active
-    @completed_todos = Todo.completed
   end
 
   def create
     @todo = Todo.create(todo_params)
-    render json: { id: @todo.id, description: @todo.description, status: @todo.status}
+    render json: { id: @todo.id, status: @todo.status, description: @todo.description }
   end
 
   def update
