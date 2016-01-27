@@ -29,6 +29,8 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 # Rails form builder
 gem 'bootstrap_form'
+# Ruby web server
+gem 'thin'
 
 source 'https://rails-assets.org' do
   # bootstrap with SASS variables
