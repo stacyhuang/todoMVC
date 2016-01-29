@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# Delete the old image
+docker rm -f todolocal
+
+# Start up db from postgres base image
+docker run -d --name db \
+  -p 5432:5432 \
+  postgres:9.5
+
+# Build any new changes to the image
+docker build -t todo/local .
+
+# Start the new image
+docker run -d --name todolocal \
+  -p 3000:3000 \
+  --link db:db \
+  -e "DATABASE_URL=postgres://postgres@db:5432/postgres" \
+  todo/local
+
+# Bundle install
+docker exec todolocal bundle install
+
+# Kill the previously running thin running process
+pkill 'ruby2.2'
+
+# Start up new thin process on port 3001
+docker exec todolocal thin start -p 3001
+
+# fire up bash
+# docker exec -it todolocal bash -l
+
+# Start the new image
+# docker run -d --name todolocal \
+  # -v ~/todoMVC:/usr/src/app \
+  # -p 3000:3000 \
+  # --link db:db \
+  # -e "DATABASE_URL=postgres://postgres@db:5432/postgres" \
+  # todo/local
+
+# Run migration script
+# docker exec todolocal rake db:migrate
+# bundle exec rake db:setup
