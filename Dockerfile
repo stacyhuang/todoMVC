@@ -27,6 +27,8 @@ RUN apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 573BFD6B3D8FBC64107
 
 # Write our own nginx.conf
 ADD nginx/nginx.conf /etc/nginx/nginx.conf
+# Add environment variables to nginx
+ADD nginx/main.d/env.conf /etc/nginx/main.d/env.conf
 # Add sites-enabled directory
 RUN mkdir -p /etc/nginx/sites-enabled
 # Set default site
@@ -38,5 +40,7 @@ RUN ln -sf /dev/stderr /var/log/nginx/error.log
 
 # Copy the main application
 ADD . /usr/src/app
+
+RUN RAILS_ENV=production bin/rake assets:precompile
 
 CMD nginx
