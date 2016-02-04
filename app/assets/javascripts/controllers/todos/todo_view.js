@@ -22,19 +22,18 @@ TodoView.prototype.addTodo = function(data) {
 
 TodoView.prototype.deleteTodo = function(id) {
   var $deletedTodo = $(".todo-item[data-todo-id=" + id + "]");
-  var status = $deletedTodo.attr("data-todo-status");
 
-  if (status === "active") {
+  if ($deletedTodo.hasClass("active")) {
     this.subtractTodoCount();
   }
   $deletedTodo.remove();
 };
 
 TodoView.prototype.clearCompleted = function() {
-  var $completedTodos = $(".todo-item[data-todo-status=completed]").toArray();
+  var $completedTodos = $(".todo-item.completed").toArray();
 
   $completedTodos.forEach(function(completedTodo) {
-    var id = completedTodo.getAttribute('data-todo-id');
+    var id = completedTodo.getAttribute("data-todo-id");
     this.deleteTodo(id);
   }.bind(this));
 };
@@ -51,14 +50,12 @@ TodoView.prototype.subtractTodoCount = function() {
 
 TodoView.prototype.toggleStatus = function(id) {
   var $todo = $(".todo-item[data-todo-id=" + id + "]");
-  $todo.find(".ctn-todo-description").toggleClass("completed");
 
-  var status = $todo.attr("data-todo-status")  === "active" ? "completed" : "active";
-  $todo.attr("data-todo-status", status);
-
-  if (status === "completed") {
+  if ($todo.hasClass("active")) {
+    $todo.removeClass("active").addClass("completed");
     this.subtractTodoCount();
   } else {
+    $todo.removeClass("completed").addClass("active");
     this.addTodoCount();
   }
 };
@@ -81,7 +78,7 @@ TodoView.prototype.displayAll = function() {
 
 TodoView.prototype.displayActive = function() {
   this.$todoItems.children().each(function(index, value) {
-    if ($(this).attr("data-todo-status") == "active") {
+    if ($(this).hasClass("active")) {
       $(this).removeClass("hidden");
     } else {
       $(this).addClass("hidden");
@@ -91,7 +88,7 @@ TodoView.prototype.displayActive = function() {
 
 TodoView.prototype.displayCompleted = function() {
   this.$todoItems.children().each(function(index, value) {
-    if ($(this).attr("data-todo-status") == "completed") {
+    if ($(this).hasClass("completed")) {
       $(this).removeClass("hidden");
     } else {
       $(this).addClass("hidden");

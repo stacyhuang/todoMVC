@@ -1,9 +1,9 @@
-<div class="todo-item row" data-todo-id="<%= id %>" data-todo-status="<%= status %>">
+<div class="todo-item row <%= status %>" data-todo-id="<%= id %>">
   <%= bootstrap_form_for :todo, layout: :inline do |f| %>
     <%= f.form_group :status, class: "col-xs-1" do %>
       <%= f.check_box :status, label: "", class: "ctn-todo-status", checked: status == "completed" %>
     <% end %>
-    <%= f.text_field :description, hide_label: true, readonly: true, wrapper_class: "col-xs-10", class: status == "completed" ? "completed ctn-todo-description" : "ctn-todo-description" , value: description %>
+    <%= f.text_field :description, hide_label: true, readonly: true, wrapper_class: "col-xs-10", class: "ctn-todo-description" , value: description %>
     <button type="button" class="close btn-delete-todo col-xs-1" aria-label="Close"><span aria-hidden="true">&times;</span></button>
   <% end %>
 </div>
