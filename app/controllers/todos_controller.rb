@@ -12,19 +12,18 @@ class TodosController < ApplicationController
   def update
     todo = Todo.find_by_id(params[:id])
     todo.update(todo_params)
-    render json: { id: todo.id, status: todo.status}
+    render json: { id: todo.id }
   end
 
   def destroy
     if params[:id] == 'completed'
       todos = Todo.completed
-      id = todos.pluck(:id)
       todos.destroy_all
-      render json: { id: id }
+      render json: { ok: true }
     else
       todo = Todo.find_by_id(params[:id])
       todo.destroy
-      render json: { id: todo.id, status: todo.status }
+      render json: { id: todo.id }
     end
   end
 

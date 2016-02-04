@@ -2,7 +2,6 @@ function TodoController(config, todoView) {
   this.$todoItems = config.todoItems;
   this.$inputTodoDescription = config.inputTodoDescription;
   this.$btnClearCompleted = config.btnClearCompleted;
-  this.$newTodoTemplate = Handlebars.compile($('#new-todo-template').html());
   this.todoView = todoView;
 
   this.init();
@@ -10,10 +9,12 @@ function TodoController(config, todoView) {
 
 TodoController.prototype.init = function() {
   this.$inputTodoDescription.on("keypress", $.proxy(this.addTodo, this));
-  this.$todoItems.on("keypress", ".ctn-todo-description", $.proxy(this.updateTodo, this));
   this.$todoItems.on("click", ".btn-delete-todo", $.proxy(this.deleteTodo, this));
   this.$todoItems.on("click", ".ctn-todo-status", $.proxy(this.toggleStatus, this));
-  this.$btnClearCompleted.on('click', $.proxy(this.clearCompleted, this));
+  this.$btnClearCompleted.on("click", $.proxy(this.clearCompleted, this));
+  this.$todoItems.on("dblclick", ".ctn-todo-description", $.proxy(this.startEditing, this));
+  this.$todoItems.on("keypress", ".ctn-todo-description", $.proxy(this.updateTodo, this));
+  this.$todoItems.on("blur", ".ctn-todo-description", $.proxy(this.stopEditing, this));
 };
 
 TodoController.prototype.addTodo = function(event) {
@@ -23,18 +24,17 @@ TodoController.prototype.addTodo = function(event) {
   var thisEl = $(event.currentTarget);
   var description = thisEl.val();
   var todo = { "description": description };
+  thisEl.val("");
 
   $.ajax({
-    type: 'POST',
-    dataType: 'json',
-    url: '/todos',
+    type: "POST",
+    dataType: "json",
+    url: "/todos",
     data: {
       todo: todo
     },
     success: function(data) {
-      this.todoView.addTodoCount();
-      this.$inputTodoDescription.val('');
-      this.$todoItems.append(this.$newTodoTemplate(data));
+      this.todoView.addTodo(data);
     }.bind(this),
     error: function(jqXHR) {
       alert(jqXHR.responseText);
@@ -44,23 +44,17 @@ TodoController.prototype.addTodo = function(event) {
 
 TodoController.prototype.deleteTodo = function(event) {
   var thisEl = $(event.currentTarget);
-  var todoItem = thisEl.closest('.todo-item');
-  var id = todoItem.attr('data-todo-id');
-  var status = todoItem.find('.ctn-todo-status')[0].checked ? "completed" : "active";
-
-  if (status === 'active') {
-    this.todoView.subtractTodoCount();
-  }
+  var id = thisEl.closest(".todo-item").attr("data-todo-id");
 
   $.ajax({
-    type: 'POST',
-    dataType: 'json',
-    url: '/todos/' + id,
+    type: "POST",
+    dataType: "json",
+    url: "/todos/" + id,
     data: {
-      _method: 'DELETE',
+      _method: "DELETE",
     },
     success: function(data) {
-      this.todoView.removeTodo(data.id);
+      this.todoView.deleteTodo(data.id);
     }.bind(this),
     error: function(jqXHR) {
       alert(jqXHR.responseText);
@@ -70,18 +64,14 @@ TodoController.prototype.deleteTodo = function(event) {
 
 TodoController.prototype.clearCompleted = function(event) {
   $.ajax({
-    type: 'POST',
-    dataType: 'json',
-    url: '/todos/completed',
+    type: "POST",
+    dataType: "json",
+    url: "/todos/completed",
     data: {
-      _method: 'DELETE',
+      _method: "DELETE",
     },
     success: function(data) {
-      var deletedTodos = data.id;
-
-      for(var i = 0; i < deletedTodos.length; i++) {
-        this.todoView.removeTodo(deletedTodos[i]);
-      }
+      this.todoView.clearCompleted();
     }.bind(this),
     error: function(jqXHR) {
       alert(jqXHR.responseText);
@@ -91,26 +81,20 @@ TodoController.prototype.clearCompleted = function(event) {
 
 TodoController.prototype.toggleStatus = function(event) {
   var thisEl = $(event.currentTarget);
-  var status = thisEl[0].checked ? "completed" : "active";
-  var id = thisEl.closest('.todo-item').attr('data-todo-id');
+  var id = thisEl.closest(".todo-item").attr("data-todo-id");
+  var status = thisEl.prop("checked") ? "completed" : "active";
   var todo = { "status": status };
 
   $.ajax({
-    type: 'POST',
-    dataType: 'json',
-    url: '/todos/' + id,
+    type: "POST",
+    dataType: "json",
+    url: "/todos/" + id,
     data: {
-      _method: 'PATCH',
+      _method: "PATCH",
       todo: todo
     },
     success: function(data) {
       this.todoView.toggleStatus(data.id);
-
-      if (data.status === 'completed') {
-        this.todoView.subtractTodoCount();
-      } else {
-        this.todoView.addTodoCount();
-      }
     }.bind(this),
     error: function(jqXHR) {
       alert(jqXHR.responseText);
@@ -118,27 +102,36 @@ TodoController.prototype.toggleStatus = function(event) {
   });
 };
 
+TodoController.prototype.startEditing = function(event) {
+  var thisEl = $(event.currentTarget);
+  this.todoView.startEditing(thisEl);
+};
+
+TodoController.prototype.stopEditing = function(event) {
+  var thisEl = $(event.currentTarget);
+  var id = thisEl.closest(".todo-item").attr("data-todo-id");
+  this.todoView.stopEditing(id);
+};
+
 TodoController.prototype.updateTodo = function(event) {
   if(event.which !== 13) return;
 
   event.preventDefault();
   var thisEl = $(event.currentTarget);
+  var id = thisEl.closest(".todo-item").attr("data-todo-id");
   var description = thisEl.val();
-  var id = thisEl.closest('.todo-item').attr('data-todo-id');
   var todo = { "description": description };
 
   $.ajax({
-    type: 'POST',
-    dataType: 'json',
-    url: '/todos/' + id,
+    type: "POST",
+    dataType: "json",
+    url: "/todos/" + id,
     data: {
-      _method: 'PATCH',
+      _method: "PATCH",
       todo: todo
     },
     success: function(data) {
-      var $todo = $(".todo-item[data-todo-id=" + id + "]");
-      var $ctnTodoDescription = $todo.find('.ctn-todo-description');
-      $ctnTodoDescription.attr('readonly', 'readonly').removeClass('editing');
+      this.todoView.stopEditing(data.id);
     }.bind(this),
     error: function(jqXHR) {
       alert(jqXHR.responseText);
