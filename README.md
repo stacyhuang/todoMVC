@@ -1,8 +1,6 @@
 # TodoMVC
 TodoMVC built with Ruby on Rails
 
-[ec2-54-153-126-210.us-west-1.compute.amazonaws.com/](ec2-54-153-126-210.us-west-1.compute.amazonaws.com)
-
 ![image](https://farm8.staticflickr.com/7225/26925088002_dc58019b38_b.jpg)
 
 ## Process
